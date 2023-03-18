@@ -8,24 +8,31 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 
-
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
 @Rollback(value = false)
-public class MemberJpaRepositoryTest {
-    @Autowired
-    MemberJpaRepository memberJpaRepository;
+class MemberRepositoryTest {
+    @Autowired MemberRepository memberRepository;
+
     @Test
-    public void testMember() {
-        Member member = new Member("memberA");
-        Member savedMember = memberJpaRepository.save(member);
-        Member findMember = memberJpaRepository.find(savedMember.getId());
+    public void testMember(){
+        Member member = new Member("userA");
+        Member savedMember = memberRepository.save(member);
+
+        Optional<Member> byId = memberRepository.findById(savedMember.getId());
+        Member findMember = byId.get();
+
         assertThat(findMember.getId()).isEqualTo(member.getId());
         assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
         assertThat(findMember).isEqualTo(member); //JPA 엔티티 동일성 보장 같은 인스턴스라고 보장됨.
+
     }
+
+
 }
