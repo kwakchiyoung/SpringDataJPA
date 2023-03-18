@@ -16,4 +16,14 @@ public class Member {
     @Id @GeneratedValue //@GeneratedValue JPA가 알아서 시퀀스 제공
     private Long id;
     private String username;
+
+    protected Member() {
+    }
+
+    public Member(String username) {
+        this.username = username;
+    }
+    public void changeUsername(String username) {
+        this.username = username;
+    }
 }

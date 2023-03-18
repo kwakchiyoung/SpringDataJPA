@@ -1,8 +1,7 @@
 spring:
-  # 주석을 해도 안해도 상관x, 설사 틀린내용이라도. 우선순위가 docker-compose내용으로 하기 때문
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/cherry_feed?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/test_jpa?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: '1234' #PC 1234 , 노트북 12341234
 
@@ -11,12 +10,11 @@ spring:
       ddl-auto: create #생성할떄마다 초기화
     properties:
       hibernate:
-        #show_sql: #이건 콘솔로 남기는방식
-        format_sql:
+        format_sql: true
+#       show_sql :true #콘솔에 남기는 방식
 logging:
   level:
     org:
       hibernate:
-        sql: debug #로그
+        SQL: debug #로그
 
-    #org.hibernate.type:trace //파라미터 바인딩된것까지 볼 수 있다.
