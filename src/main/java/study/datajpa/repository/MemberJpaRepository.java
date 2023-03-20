@@ -49,4 +49,20 @@ public class MemberJpaRepository {
                 .setParameter("age",age)
                 .getResultList();
     }
+    //JPA 페이징 리포지토리 코드
+    //검색 조건: 나이가 10살
+    //정렬 조건: 이름으로 내림차순
+    //페이징 조건: 첫 번째 페이지, 페이지당 보여줄 데이터는 3건
+    public List<Member> findByPage(int age, int offset, int limit) {
+        return em.createQuery("select m from Member m where m.age = :age order by m.username desc")
+                .setParameter("age", age)
+                .setFirstResult(offset)//어디서부터 가져올건지 페이징
+                .setMaxResults(limit) //개수를 몇개 가져올건지
+                .getResultList();
+    }
+    public long totalCount(int age) { //총 조회하는 데이터 개수 카운팅
+        return em.createQuery("select count(m) from Member m where m.age=:age",Long.class) //count는 long타입으로 반환된다.
+                .setParameter("age",age)
+                .getSingleResult();
+    }
 }

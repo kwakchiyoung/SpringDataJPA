@@ -4,6 +4,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -129,7 +132,7 @@ class MemberRepositoryTest {
         }
     }
 
-    //재미있는기능 파라미터바인딩
+    //재미있는기능 파라미터바인딩 //재미있는기능 컬렉션 파라미터 바인딩 in절로 여러개를 조회하고 싶을떄 쓰는방식
     @Test
     public void findByNames() {
         Member m1 = new Member("AAA",10);
@@ -143,6 +146,53 @@ class MemberRepositoryTest {
             System.out.println("member = " + member);
         }
     }
+    //반환 타입
+    @Test
+    public void returnType () {
+        Member m1 = new Member("AAA",10);
+        Member m2 = new Member("BBB",20);
+
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> aaa = memberRepository.findListByUsername("AAA"); //컬렉션으로 받기 //없는값으로 조회를 할경우 빈 컬렉션을 제공해준다. 절대 null이 아니다.
+        Member findMember = memberRepository.findMemberByUsername("AAA"); //단건으로 받기 //없으면 null로 나온다.
+        Optional<Member> findOptionalMember = memberRepository.findOptionalByUsername("AAA");//결과가 2건 이상: javax.persistence.NonUniqueResultException 예외 발생
+        System.out.println("findMember = " + findMember);
+    }
+    //페이징 테스트
+    @Test
+    public void paging() {
+        //given
+        memberRepository.save(new Member("member1",10));
+        memberRepository.save(new Member("member2",10));
+        memberRepository.save(new Member("member3",10));
+        memberRepository.save(new Member("member4",10));
+        memberRepository.save(new Member("member5",10));
+
+        int age = 10;
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.Direction.DESC, "username"); //0페이지에서 3개가져와 //username을desc로
+
+        //when
+        Page<Member> page = memberRepository.findByAge(age, pageRequest);
+
+        //then
+        List<Member> content = page.getContent(); //0번쨰 페이지 3개 데이터가 꺼내진다. //조회된 데이터
+        long totalElements = page.getTotalElements(); //토탈카운트
+
+        for (Member member : content) {
+            System.out.println("member = " + member);
+        }
+        System.out.println("totalElements = " + totalElements);
+
+        assertThat(content.size()).isEqualTo(3); ; //조회된 데이터 수
+        assertThat(page.getTotalElements()).isEqualTo(5); //전체 데이터 수
+        assertThat(page.getNumber()).isEqualTo(0);//페이지번호
+        assertThat(page.getTotalPages()).isEqualTo(2); //총 페이지 번호
+        assertThat(page.isFirst()).isTrue(); //첫번쨰 페이지인지
+        assertThat(page.hasNext()).isTrue(); //다음페이지가 있는지
+    }
+
 
 
 

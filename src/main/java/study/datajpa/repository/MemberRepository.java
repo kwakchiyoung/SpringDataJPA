@@ -1,5 +1,7 @@
 package study.datajpa.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,6 +10,7 @@ import study.datajpa.entity.Member;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member,Long> {
 
@@ -30,4 +33,14 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
     @Query("select m from Member m where m.username in :names")
     List<Member> findByNmaes(@Param("names") Collection<String> names);
 
+    //반환타입은 여러개를 줄 수 있다.
+    List<Member> findListByUsername(String username); //컬랙션 반환타입
+    Member findMemberByUsername(String username);     //단건
+    Optional<Member> findOptionalByUsername(String username);//단건을 optional에 감싸서
+
+    //JPA 페이징 리포지토리 코드
+    //검색 조건: 나이가 10살
+    //정렬 조건: 이름으로 내림차순
+    //페이징 조건: 첫 번째 페이지, 페이지당 보여줄 데이터는 3건
+    Page<Member> findByAge(int age, Pageable pageable);
 }
